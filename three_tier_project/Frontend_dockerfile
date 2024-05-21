@@ -1,0 +1,10 @@
+FROM centos:7
+WORKDIR /opt/
+ADD https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz .
+RUN tar -xzvf apache-tomcat-9.0.89.tar.gz
+RUN yum install java-11-openjdk -y
+WORKDIR /opt/apache-tomcat-9.0.89
+ADD https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war webapps/student.war
+ADD https://s3.ap-south-1.amazonaws.com/host-student.war/mysql-connector.jar  lib/mysql-connector.jar
+EXPOSE 8080
+CMD ["bin/catalina.sh" , "run"]
