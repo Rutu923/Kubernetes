@@ -1,0 +1,104 @@
+2-tier deployment with docker 
+--> Flask app
+A Flask app refers to a web application built using Flask, which is a lightweight and flexible Python web framework. Flask allows developers to quickly create web applications by providing tools and libraries for routing, handling HTTP requests, rendering templates, and more. Flask follows the WSGI (Web Server Gateway Interface) specification, making it compatible with various web servers.
+
+In a Flask app, you typically define routes, which are URLs that the application can handle, along with associated Python functions that execute when those URLs are accessed. These functions can generate HTTP responses, render templates, interact with databases, and perform other tasks required by the application.
+
+On EC2
+
+Run an ubuntu Vm
+1. -->apt update
+2. -->apt install docker.io -y
+3. -->docker ps
+permission denied
+then 
+4. -->chown $USER /var/run/docker.sock
+5. git clone https://github.com/LondheShubham153/two-tier-flask-app 
+6. -->cd two-tier-flask-app
+
+create Dockerfile
+FROM python:3.9-slim #to get a size small of an image
+WORKDIR /app
+RUN apt-get update -y \
+	&& apt-get upgrade -y \
+	&& apt-get install -y gcc default-libmysqlclient-dev pkg-config \
+	&& rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install mysqlclient
+RUN pip install -r requirements.txt
+COPY . .
+CMD ["python","app.py"]
+7. docker build -t flaskapp .
+8. docker run -d -p 5000:5000 flaskapp:latest
+
+
+9. Edit security allowing inbound traffic on port 5000
+
+10. create mysql container
+11.--> docker run -d -p 3306:3306 --name mysql -e MYSQL_ROOT_PASSWORD='1234' mysql:5.7k
+
+Now attach both container flaskapp and mysql in the same network so they can communicate
+
+12. docker network create twotier
+kill both containers
+13. docker kill containerid(flask_app and mysql)
+14.--> docker run -d -p 5000:5000 --name app  --network=twotier -e MYSQL_HOST=(mysql_container name) -e MYSQL_USER=admin -e MYSQL_PASSWORD='1234' -e MYSQL_DB=mydb flaskapp:latest
+
+15. docker run -d -p 3306:3306 --name mysql --network=twotier -e MYSQL_DATABASE=mydb -e MYSQL_USER=admin -e MYSQL_PASSWORD=admin MYSQL_ROOT_PASSWORD='1234' mysql:5.7
+
+16. docker network ls
+17. docker network inspect twotier (see which containers are there in this network)
+
+
+go inside mysql container create table
+
+18. docker exec -it container_id
+19. mysql -u root -p 1234
+
+show databases;
+use mydb;
+CREATE TABLE messages (
+	id INT AUTO_INCREMENT PRIMARY KEY,message TEXT
+);
+
+hit on 5000
+
+
+Now push image on docker hub
+
+1. docker login
+2. docker tag flaksapp:latest username/flaskapp:latest
+3. docker images
+3. docker push image_name
+
+
+how to run multiple container simultaneously
+
+1. apt install docker-compose
+2. vim docker-compose.yml 
+version: ' 3'
+services:
+	backend:
+	   image: path of dockerhub image
+	   ports:
+		- "5000:5000"
+	   enviornment:
+		- MYSQL_HOST: "mysql"
+		- MYSQL_USER: "admin"
+		- MYSQL_HOST: "admin"
+		- MYSQL_HOST: "mydb"
+		
+	  mysql:
+		image: mysql:5.7
+		enviornment:
+	- MYSQL_DATABASE=mydb 	- MYSQL_USER: admin  	- MYSQL_PASSWORD: admin 	- MYSQL_ROOT_PASSWORD:'1234'
+
+	ports:
+		-"3306:3306"
+	volumes:
+		-./message.sql:/docker-entrypoint-initdb.d/message.sql
+		- mysql-data:/var/lib/mysql
+	volumes:
+		mysql-data:
+			
+
