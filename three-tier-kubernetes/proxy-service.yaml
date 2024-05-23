@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: proxy-deployment
+  name: proxy-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: proxy
+      app: proxy-app
   template:
     metadata:
       labels:
-        app: proxy
+        app: proxy-app
     spec:
       containers:
-      - name: proxy
+      - name: proxy-app
         image: rutujamalpute/three-tier:nginx_image
         ports:
         - containerPort: 80
@@ -24,7 +24,7 @@ metadata:
   name: proxy-service
 spec:
   selector:
-    app: proxy
+    app: proxy-app
   ports:
     - protocol: TCP
       port: 80
