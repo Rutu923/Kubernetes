@@ -16,12 +16,10 @@ spec:
       - name: tomcat
         image: rutujamalpute/three-tier:tomcat
         ports:
-        - containerPort: 8080
-        env:
-        - name: MYSQL_HOST
-          value: mysql-service
-        - name: MYSQL_PORT
-          value: "3306"
+         - name: tomcat
+           containerPort: 8080
+           protocol: TCP
+           
 
 ---
 apiVersion: v1
@@ -31,8 +29,8 @@ metadata:
 spec:
   selector:
     app: frontend
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
+ ports: 
+  - name: http 
+    targetPort: 8080 
+    port: 80
   type: LoadBalancer
