@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    test: liveness
+  name: mylivenessprobe
+spec:
+  containers:
+  - name: liveness
+    image: ubuntu
+    args:
+    - /bin/sh
+    - -c
+    - touch /tmp/healthy; sleep 1000
+    livenessProbe:                                          
+      exec:
+        command:                                         
+        - cat                
+        - /tmp/healthy
+      initialDelaySeconds: 5          
+      periodSeconds: 5                                 
+      timeoutSeconds: 30 
+
+
+How to run file
+--> kubectl apply -f liveness.yaml
+--> kubectl get pods
+--> kubectl describe pod pod_name
+--> kubectl exec mylivenessprobe -it -- /bin/bash
+--> cat /tmp/healthy
+--> echo $?
+if 0 its running if non zero recreate container
+--> cat /tmp/rutuja (search as it is not present so will get the error)
+--> echo $?
+--> remove /tmp/healthy
+exit from container 
+--> echo$? we get non zero code
+
