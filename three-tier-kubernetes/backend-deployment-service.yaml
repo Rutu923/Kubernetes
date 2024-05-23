@@ -16,10 +16,9 @@ spec:
       - name: mysql
         image: rutujamalpute/three-tier:database
         ports:
-        - containerPort: 3306
-        env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: "1234"
+        - name: db
+          containerPort: 8080
+          protocol: TCP
 
 
 ---
