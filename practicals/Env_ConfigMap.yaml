@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: myenvconfig
+spec:
+ containers:
+ - name: c2
+   image: centos
+   command: ["/bin/bash","-c","while true;do echo Rutuja; sleep 5; done"]
+   env:
+   - name: myenv
+     valueFrom:
+      configMapKeyRef:
+       name: mymap
+       key: sample.conf
