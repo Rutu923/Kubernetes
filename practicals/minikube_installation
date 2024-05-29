@@ -1,0 +1,11 @@
+
+1. sudo su
+2. apt update
+3. apt install docker.io -y
+4.sudo apt install -y curl wget apt-transport-https
+5. curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+6.sudo install minikube-linux-amd64 /usr/local/bin/minikube
+7. Minikube version
+8.curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+9.minikube start --driver=docker --force
+10. minikube status
